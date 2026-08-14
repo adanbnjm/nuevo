@@ -15,7 +15,43 @@ console.log(" version x 10 = " + (version * 10));
 console.log("============================")
 /// este es otra tarea
 
-const tareas: string[] = [];
+
+
+interface Tareas {
+    id:number;
+    titulo:string;
+    completado:boolean;
+}
+const tarea:Tareas[] =[]
+let siguienteId =1;
+const añadirTarea = (titulo: string) => {
+    const nuevaTarea: Tareas = {
+        id: siguienteId,
+        titulo: titulo,
+        completado: false
+    };
+
+    tarea.push(nuevaTarea);
+    siguienteId++;
+};
+const listarTareas = () => {
+    for (let i = 0; i < tarea.length; i++) {
+        console.log(
+            `[${tarea[i].id}] ${tarea[i].titulo} - ${
+                tarea[i].completado ? "completed" : "pending"
+            }`
+        );
+    }
+};
+const eliminarTarea = () => {
+    const tareaEliminada = tarea.pop();
+
+    if (tareaEliminada) {
+        console.log("Se eliminó la tarea:", tareaEliminada.titulo);
+    } else {
+        console.log("No hay tareas para eliminar.");
+    }
+};
 let elige_una_opcion: string;
 
 do {
@@ -33,16 +69,16 @@ do {
 
     switch (elige_una_opcion) {
         case "1":
-            tareas.push(await rl.question("que tarea deseas añadir para el dia de hoy? : "));
+            const titulo=await rl.question("que tarea deseas añadir para el dia de hoy? : ");
+            añadirTarea(titulo)
             break;
 
         case "2":
-            for (let i = 0; i < tareas.length; i++)
-                console.log(`${i + 1}. ${tareas[i]}`);
+            listarTareas();
             break;
 
         case "3":
-            console.log("se elimino la tarea:", tareas.pop());
+            eliminarTarea()
             break;
 
         case "4":
