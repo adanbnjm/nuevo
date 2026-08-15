@@ -1,4 +1,4 @@
-import readline from 'readline/promises';
+/* import readline from 'readline/promises';
 import { stdin as input, stdout as output } from 'process';
 
 const rl = readline.createInterface({ input, output });
@@ -93,4 +93,32 @@ do {
 rl.close();
 
 // 🚫 No eliminar las líneas de abajo ⬇️
-rl.close();
+rl.close(); */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* let edad;
+console.log(edad);
+ */
+
+
+function saludar() {
+  console.log();
+}
+const resultado = saludar();
+
+console.log(resultado);
