@@ -8,12 +8,12 @@ const rl = readline.createInterface({ input, output });
 let systemName: string = "sistema de benji";
 let version: number = 1.0;
 let username: string = "benji";
+
 console.log("============================");
 console.log("nombre del sistema: " + systemName + " v" + version);
 console.log(" ¡bienvenido, " + username + "!");
 console.log(" version x 10 = " + version * 10);
 console.log("============================");
-/// este es otra tarea
 
 interface Tareas {
   id: number;
@@ -25,26 +25,47 @@ const tarea: Tareas[] = [];
 
 let siguienteId = 1;
 
-const añadirTarea = (titulo: string) => {
-  const nuevaTarea: Tareas = {
-    id: siguienteId,
-    titulo: titulo,
-    completado: false,
-  };
+const baseDeDatosFake = (tarea: Tareas): Promise<void> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log("tarea guardada en la base de datos.");
+      resolve();
+    }, 3000);
+  });
+};
 
-  tarea.push(nuevaTarea);
-  siguienteId++;
+const añadirTarea = async (titulo: string) => {
+  try {
+    if (titulo.trim() === "") {
+      throw new Error("El título de la tarea no puede estar vacío.");
+    }
+
+    const nuevaTarea: Tareas = {
+      id: siguienteId,
+      titulo: titulo,
+      completado: false,
+    };
+
+    await baseDeDatosFake(nuevaTarea);
+
+    tarea.push(nuevaTarea);
+    siguienteId++;
+
+    console.log("Tarea agregada correctamente.");
+  } catch (error) {
+    console.log((error as Error).message);
+  }
 };
 
 const listarTareas = () => {
-  const tareasParaMostrar = tarea.map((tarea) => {
-    const { id, titulo, completado } = tarea;
+  const tareasParaMostrar = tarea.map((tareaActual) => {
+    const { id, titulo, completado } = tareaActual;
 
     return `[${id}] ${titulo} - ${completado ? "completado" : "pendiente"}`;
   });
 
-  tareasParaMostrar.forEach((tareasParaMostrar) => {
-    console.log(tareasParaMostrar);
+  tareasParaMostrar.forEach((tareaParaMostrar) => {
+    console.log(tareaParaMostrar);
   });
 };
 
@@ -52,48 +73,48 @@ const eliminarTarea = () => {
   const tareaEliminada = tarea.pop();
 
   if (tareaEliminada) {
-    console.log("Se eliminó la tarea:", tareaEliminada.titulo);
+    console.log("se eliminó la tarea:", tareaEliminada.titulo);
   } else {
-    console.log("No hay tareas para eliminar.");
+    console.log("no hay tareas para eliminar");
   }
 };
 
-const marcarcompletado = (id: number) => {
-  const tareaEncontrada = tarea.find((tarea) => tarea.id === id);
+const marcarCompletado = (id: number) => {
+  const tareaEncontrada = tarea.find((tareaActual) => tareaActual.id === id);
 
   if (tareaEncontrada) {
     tareaEncontrada.completado = true;
     console.log("Tarea completada:", tareaEncontrada.titulo);
   } else {
-    console.log("no encontramos la tarea con ese id.");
+    console.log("no encontramos la tarea con ese id");
   }
 };
 
 const filtrarPendientes = () => {
-  return tarea.filter((tarea) => tarea.completado === false);
+  return tarea.filter((tareaActual) => tareaActual.completado === false);
 };
 
-const filtrarCompletado = () => {
-  return tarea.filter((tarea) => tarea.completado === true);
+const filtrarCompletadas = () => {
+  return tarea.filter((tareaActual) => tareaActual.completado === true);
 };
 
 let elige_una_opcion: string;
 
 do {
   console.log(`
-1. Agrega una tarea
+1. AGREGAR UNA TAREA
 
-2. Lista las tareas
+2. LISTA DE TAREAS
 
-3. Elimina la última tarea
+3. ELIMINAR LA ULTIMA TAREA
 
-4. Marca una tarea como completada
+4. MARCAR UNA TAREA COMO COMPLETADA
 
-5. Lista las tareas pendientes
+5. LISTA DE TAREAS PENDIENTES
 
-6. Lista las tareas completadas
+6. LISTA DE TAREAS COMPLETADAS
 
-7. Salir
+7. SALIR
 `);
 
   elige_una_opcion = await rl.question("elige_una_opcion: ");
@@ -104,7 +125,7 @@ do {
         "que tarea deseas añadir para el dia de hoy? : ",
       );
 
-      añadirTarea(titulo);
+      await añadirTarea(titulo);
       break;
 
     case "2":
@@ -120,18 +141,23 @@ do {
         await rl.question("id de la tarea que deseas completar: "),
       );
 
-      marcarcompletado(id);
+      marcarCompletado(id);
       break;
 
     case "5":
-      filtrarPendientes().forEach((tarea) => {
-        console.log(`[${tarea.id}] ${tarea.titulo} - pendiente`);
-      });
-      break;
+      const pendientes = filtrarPendientes();
 
+      if (pendientes.length === 0) {
+        console.log("No tienes tareas pendientes.");
+      } else {
+        pendientes.forEach((tareaActual) => {
+          console.log(`[${tareaActual.id}] ${tareaActual.titulo} - pendiente`);
+        });
+      }
+      break;
     case "6":
-      filtrarCompletado().forEach((tarea) => {
-        console.log(`[${tarea.id}] ${tarea.titulo} - completado`);
+      filtrarCompletadas().forEach((tareaActual) => {
+        console.log(`[${tareaActual.id}] ${tareaActual.titulo} - completado`);
       });
       break;
 
